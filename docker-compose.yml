@@ -1,0 +1,42 @@
+version: "3"
+services:
+  backend:
+    build: 
+      context: .
+
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    ports:
+      - 127.0.0.1:${PORT}:${PORT}
+
+    command: ./manage.py runserver 0:8000
+    depends_on:
+      - postgres-parking
+      - redis
+
+
+  postgres-parking:
+    image: postgres:12.4-alpine
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:${POSTGRES_PORT}:5432
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+  redis:
+    image: redis:5.0-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+
+volumes:
+  pgdata:
+  redisdata:

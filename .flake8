@@ -1,0 +1,16 @@
+[flake8]
+ignore =
+    E128,
+    E503,
+    W503
+
+exclude =
+    env/,
+    */migrations/*.py,
+    fabfile.py,
+    .gitlab-ci.systemd.py,
+    fabfile.systemd.py,
+    .git,
+    project/local_settings.example.py
+
+max-line-length = 80

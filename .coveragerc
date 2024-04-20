@@ -1,0 +1,14 @@
+[paths]
+source =
+    apps/*
+    project/*
+
+[report]
+precision = 2
+omit =
+    manage.py
+    project/celery.py
+    project/wsgi.py
+    project/asgi.py
+    project/local_settings.example.py
+    apps/*/migrations/*
