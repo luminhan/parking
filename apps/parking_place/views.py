@@ -45,9 +45,13 @@ class AvailableParkingSpacesViewSet(viewsets.ReadOnlyModelViewSet):
             tzinfo=datetime.timezone.utc
         )
         space_type = self.request.query_params.get("space_type")
+        if self.request.user.is_superuser:
+            return ParkingSpace.objects.available_spaces_within(
+                reserve_start, reserve_end, space_type
+            )
         return ParkingSpace.objects.available_spaces_within(
             reserve_start, reserve_end, space_type
-        )
+        ).filter(parking_place__managed_by=self.request.user)
 
 
 class ParkingSpaceViewSet(viewsets.ReadOnlyModelViewSet):
