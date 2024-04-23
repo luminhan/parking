@@ -13,4 +13,4 @@ exclude =
     .git,
     project/local_settings.example.py
 
-max-line-length = 80
+max-line-length = 88

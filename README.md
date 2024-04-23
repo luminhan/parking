@@ -1,7 +1,6 @@
 # Django API Project - Parking
 
 
-* [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/) configured and also with the Label A skinning package to build backoffice integrations.
 * [REST Framework](https://www.django-rest-framework.org/) - API endpoint development framework built on top of Django. Minimally configured so you can do whatever you want with your project.
 * [drf-spectacular](https://drf-spectacular.readthedocs.io/en/latest/) - generates Swagger documentation for your REST Framework endpoints at `/swagger`.
 
@@ -15,7 +14,7 @@ This is all wrapped up into a docker-compose environment with development defaul
 
 ### `shared` App
 * Tests for health check endpoint
-* Test factories implemented for User and Group models
+* Test factories implemented for User model
 
 ### `authentication` App
 * Custom user model that uses email instead of username as primary
@@ -23,7 +22,7 @@ This is all wrapped up into a docker-compose environment with development defaul
 ### REST Framework
 * Integrated into Django
 * Standard base config defined in `settings.py`
-* Swagger documentation generation configured at `/swagger`, `/swagger.json`, `/swagger.yaml`
+* Swagger documentation generation configured at `/swagger`
 
 ## Usage
 
@@ -48,7 +47,6 @@ These operations assume the project is already up and are to be run in a second 
 * **Flake8**: `docker-compose exec backend flake8`
 * **Run tests**: `docker-compose exec backend ./manage.py test`
 * **Run specific tests**: `docker-compose exec backend ./manage.py test apps/cookiecutter`
-* **Run tests with coverage**: `docker-compose exec backend sh -c "coverage run --source='.' ./manage.py test  && coverage report -m --omit=fabfile.py,*/tests/*,*/migrations/*"`
 * **Generate migrations**: `docker-compose exec backend ./manage.py makemigrations`
 * **Run migrations**: `docker-compose exec backend ./manage.py migrate`
 * **Create superuser**: `docker-compose exec backend ./manage.py createsuperuser`

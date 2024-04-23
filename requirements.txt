@@ -11,3 +11,7 @@ factory-boy==3.2.1
 coverage==7.2.5
 psutil==5.9.5
 django-redis-cache==3.0.1
+djoser
+celery==5.2.7
+django-celery-beat==2.5.0
+freezegun

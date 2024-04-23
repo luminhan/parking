@@ -15,6 +15,7 @@ import os
 ############################
 # Application definition
 ############################
+from datetime import timedelta
 INSTALLED_APPS = [
 
     # Django built in libraries we're using
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_spectacular',
+    'djoser',
+    'django_celery_beat',
 
 
     # Authentication app
@@ -48,7 +51,9 @@ INSTALLED_APPS = [
 
 
     # Apps
-    'apps.shared'
+    'apps.shared',
+    'apps.reservation',
+    'apps.parking_place',
 ]
 
 # Requests are passed through each middleware in order on it's way down to the
@@ -150,10 +155,12 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES':
+        ['apps.shared.permissions.IsAuthenticatedAndAccountConfirmed'],
     # Project-wide default page size, overriddable in ModelViewSet
-    'PAGE_SIZE': 100}
+    'PAGE_SIZE': 10}
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Project API',
@@ -168,33 +175,11 @@ SPECTACULAR_SETTINGS = {
 MGMT_HOST = os.environ.get("MGMT_HOST", "")
 FE_HOST = os.environ.get("FE_HOST", "")
 
-DJOSER = {
-    "DASHBOARD_ACTIVATION_URL": "{MGMT_HOST}/confirm-signup?uid={uid}&token={token}",  # noqa: E501
-    "ACTIVATION_URL": "{FE_HOST}/confirm-signup?uid={uid}&token={token}",
-    "DASHBOARD_RESET_CONFIRM_URL": "{MGMT_HOST}/confirm-password?uid={uid}&token={token}",  # noqa: E501
-    "PASSWORD_RESET_CONFIRM_URL": "{FE_HOST}/confirm-password?uid={uid}&token={token}",  # noqa: E501
-    "USERNAME_RESET_CONFIRM_URL": "{FE_HOST}/username/reset/confirm?uid={uid}&token={token}",  # noqa: E501
-    "TOKEN_MODEL": None,
-    "LOGIN_FIELD": "email",
-    "SEND_ACTIVATION_EMAIL": True,
-    "SEND_CONFIRMATION_EMAIL": True,
-    "EMAIL": {
-        "activation": "apps.authentication.email.ExtendedActivationEmail",
-        "confirmation": "apps.authentication.email.ExtendedConfirmationEmail",
-        "password_reset": "apps.authentication.email.ExtendedPasswordResetEmail",  # noqa: E501
-        "password_changed_confirmation": "apps.authentication.email.ExtendedPasswordChangedConfirmationEmail",  # noqa: E501
-        "username_changed_confirmation": "apps.authentication.email.ExtendedUsernameChangedConfirmationEmail",  # noqa: E501
-        "username_reset": "apps.authentication.email.ExtendedUsernameResetEmail",  # noqa: E501
-    },
-    "SERIALIZERS": {
-
-        'current_user': 'apps.dashboard_user_management.serializers.UserSerializer',  # noqa: E501
-
-    }
-}
 
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT', 'Bearer'),
+    "AUTH_HEADER_TYPES": ("JWT", "Bearer"),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 if ENABLE_BROWSEABLE:
@@ -248,6 +233,16 @@ STATIC_ROOT = "/static/"
 HEALTH_CHECK = {
     'DISK_USAGE_MAX': 90,  # percent
     'MEMORY_MIN': 100,  # in MB
+}
+# Celery configuration
+CELERY_BROKER_URL = f"redis://{REDIS_URL}/1"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_URL}/2"
+CELERY_RESULT_EXPIRES = 3600
+CELERY_BEAT_SCHEDULE = {
+    'my_scheduled_job': {
+        'task': 'apps.reservation.tasks.release_expired_reservations',
+        'schedule': 10.0,  # every 10 seconds
+    },
 }
 
 

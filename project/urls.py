@@ -34,14 +34,12 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger',
          SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-
     # Authentication
-    path('logout/',
-         LogoutView.as_view(template_name=settings.LOGOUT_REDIRECT_URL),
-         name='logout'),
-    path('api-auth/', include('rest_framework.urls')),
+    path('auth/', include('apps.authentication.urls')),
 
-
+    # API
+    path('api/', include('apps.reservation.urls')),
+    path('api/', include('apps.parking_place.urls')),
     # Admin
     path('admin/', admin.site.urls),
 ]

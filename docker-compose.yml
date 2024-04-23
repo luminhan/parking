@@ -15,6 +15,7 @@ services:
     command: ./manage.py runserver 0:8000
     depends_on:
       - postgres-parking
+      - celery
       - redis
 
 
@@ -29,6 +30,20 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+  celery:
+    build:
+      context: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command:
+      celery -A project worker -B -c 2 -l info
+    depends_on:
+      - postgres-parking
+      - redis
 
   redis:
     image: redis:5.0-alpine
